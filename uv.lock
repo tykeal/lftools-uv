@@ -1067,6 +1067,8 @@ test = [
 dev = [
     { name = "pytest" },
     { name = "pytest-cov" },
+    { name = "pytest-responses" },
+    { name = "responses" },
 ]
 
 [package.metadata]
@@ -1165,6 +1167,8 @@ provides-extras = ["all", "dev", "docs", "ldap", "openstack", "test"]
 dev = [
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "pytest-cov", specifier = ">=5.0.0" },
+    { name = "pytest-responses", specifier = ">=0.5.1" },
+    { name = "responses", specifier = ">=0.25.0" },
 ]
 
 [[package]]
