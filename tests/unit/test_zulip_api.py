@@ -2951,6 +2951,23 @@ def test_set_topic_policy_rejects_invalid_policy() -> None:
         set_topic_policy(client, "general", cast(Any, "maybe"))
 
 
+@pytest.mark.parametrize("channel", [0, -1])
+def test_topic_policy_rejects_non_positive_channel_id(channel: int) -> None:
+    """Numeric topic-policy targets must be positive channel IDs."""
+    client = _topic_policy_client()
+    with pytest.raises(ZulipValidationError, match="positive channel id"):
+        get_topic_policy(client, channel)
+    with pytest.raises(ZulipValidationError, match="positive channel id"):
+        set_topic_policy(client, channel, "deny")
+
+
+def test_get_topic_policy_rejects_bool_policy_field() -> None:
+    """Boolean topic-policy values from the server are malformed."""
+    client = _topic_policy_client(stream_info_policy=cast(Any, True))
+    with pytest.raises(ZulipAPIError, match="Malformed topic-policy"):
+        get_topic_policy(client, "general")
+
+
 def test_get_topic_policy_checks_feature_level_first() -> None:
     """Read mode fails before endpoint calls when the server is too old."""
     client = _topic_policy_client(feature_level=333)

@@ -1853,7 +1853,7 @@ def _normalize_topic_policy(raw_policy: Any) -> TopicPolicy:
     """Translate Zulip topic-policy API values to CLI policy strings."""
     if isinstance(raw_policy, str) and raw_policy in VALID_TOPIC_POLICIES:
         return raw_policy  # type: ignore[return-value]
-    if isinstance(raw_policy, int) and raw_policy in TOPIC_POLICY_REVERSE_MAP:
+    if not isinstance(raw_policy, bool) and isinstance(raw_policy, int) and raw_policy in TOPIC_POLICY_REVERSE_MAP:
         return TOPIC_POLICY_REVERSE_MAP[raw_policy]  # type: ignore[return-value]
     raise ZulipAPIError(f"Malformed topic-policy value from server: {raw_policy!r}")
 
@@ -1870,6 +1870,8 @@ def _resolve_topic_policy_channel(
     if isinstance(channel, dict):
         return channel
     if isinstance(channel, int):
+        if channel <= 0:
+            raise ZulipValidationError(f"topic-policy requires a positive channel id (got {channel})")
         return resolve_channel(client, channel_id=channel, include_archived=include_archived)
     if isinstance(channel, str):
         channel_name = channel.strip()

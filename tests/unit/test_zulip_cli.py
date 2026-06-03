@@ -2601,7 +2601,7 @@ def test_channel_topic_policy_read_mode(monkeypatch: pytest.MonkeyPatch) -> None
     assert result.exit_code == 0, result.stdout
     assert "allow" in result.stdout
     get_mock.assert_called_once()
-    _, args, kwargs = get_mock.mock_calls[0]
+    args, kwargs = get_mock.call_args
     assert args[1] == "general"
     assert kwargs["include_archived"] is False
     set_mock.assert_not_called()
@@ -2628,7 +2628,7 @@ def test_channel_topic_policy_write_mode(
     assert result.exit_code == 0, result.stdout
     assert policy in result.stdout
     set_mock.assert_called_once()
-    _, args, kwargs = set_mock.mock_calls[0]
+    args, kwargs = set_mock.call_args
     assert args[1] == "general"
     assert args[2] == policy
     assert kwargs["include_archived"] is False
@@ -2642,7 +2642,7 @@ def test_channel_topic_policy_invalid_policy_rejected(
     runner = CliRunner()
     result = runner.invoke(zulip_app, ["channel", "topic-policy", "general", "--policy", "maybe"])
     assert result.exit_code == 1
-    combined = result.stdout + result.stderr
+    combined = result.stdout + (result.stderr or "")
     assert "allow" in combined
     assert "deny" in combined
     assert "follow-default" in combined
@@ -2661,7 +2661,7 @@ def test_channel_topic_policy_feature_level_error(
     runner = CliRunner()
     result = runner.invoke(zulip_app, ["channel", "topic-policy", "general"])
     assert result.exit_code == 1
-    combined = result.stdout + result.stderr
+    combined = result.stdout + (result.stderr or "")
     assert "feature level 334" in combined
     assert "server has 333" in combined
 
